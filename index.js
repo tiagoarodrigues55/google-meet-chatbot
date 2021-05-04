@@ -8,7 +8,6 @@
 		sendMessage: function(...args) {
 			let message = document.querySelector("*[name=\"chatTextInput\"]");
 			let button = document.querySelector("div > div > div > div > div > div > div[data-is-persistent=\"true\"] > div > div > span > div[data-reverse-order=\"false\"] > div > div[data-tooltip-horizontal-offset=\"0\"]");
-			
 			if (message && button) {
 				let lastValue = message.value + "";
 				message.value = args.join("");
@@ -63,32 +62,27 @@
 
 // Sample Code
 var prefix = '.';
-
+var respostas = []
+var blacklist = []
 chatbot.on("message", (username, message, date) => {
-	let m_prefix = message.slice(0, prefix.length);
-	let splitted = message.slice(prefix.length).toLowerCase().split(' ');
-	
-	if (m_prefix === prefix) {
-		switch (splitted[0]) {
-			case "ping":
-				chatbot.sendMessage("Pong!");
-				break;
-			case "calc":
-				let expression = splitted.slice(1).join("").replace(/[^-()\d/*+.]/g, "");
-				let value = eval(expression); 
-				
-				if (value)
-					chatbot.sendMessage("Expression:  ", expression, "\nResult: ", value);
-				break;
-			case "hi":
-				chatbot.sendMessage("Hello, ", username, '!');
-				break;
-			case "invite":
-				chatbot.sendMessage("Invite URL: ", window.location.href.split('?')[0]);
-				break;
-			default:
-				chatbot.sendMessage("Command not found.");
-				break;
-		}
-	}
+  if(blacklist.indexOf(message)!==-1){
+    return
+  }
+  console.log(respostas)
+  if(respostas.indexOf(message)!==-1){
+    respostas.push(message)
+  }else{
+    if(respostas.length){
+      respostas = []
+      return
+    }
+    respostas.push(message)
+
+  }
+  if(respostas.length > 1){
+    chatbot.sendMessage(message)
+    blacklist.push(message)
+    respostas = []
+  }
+
 });
